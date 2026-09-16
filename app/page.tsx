@@ -76,7 +76,7 @@ export default function Home() {
           throw new Error("Server returned error");
         }
       } catch (error) {
-        console.warn("Offline or network error, falling back to local storage", error);
+        console.warn("Offline or network error, falling back to local storage:", error instanceof Error ? error.message : String(error));
         setIsOffline(true);
         const localDraft = localStorage.getItem('nexus_draft_offline');
         if (localDraft) {
@@ -100,7 +100,7 @@ export default function Home() {
       setIsOffline(false);
       localStorage.removeItem('nexus_draft_offline');
     } catch (e) {
-      console.warn("Auto-save failed (offline mode activated). Saving locally.", e);
+      console.warn("Auto-save failed (offline mode activated). Saving locally:", e instanceof Error ? e.message : String(e));
       setIsOffline(true);
       localStorage.setItem('nexus_draft_offline', JSON.stringify(newDraft));
     }

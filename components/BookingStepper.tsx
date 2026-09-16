@@ -114,7 +114,7 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
             <h4 className="font-semibold text-amber-800 mb-2 flex items-center"><Package className="mr-2" size={18} /> AI Magic Fill</h4>
             <div className="flex gap-2">
               <input 
-                className="flex-1 p-2 border border-amber-300 rounded focus:ring-2 focus:ring-amber-500 outline-none" 
+                className="flex-1 p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" 
                 placeholder="Paste an email or text (e.g. '5kg box 30x20x15cm going from NYC to LA')" 
                 value={prompt} 
                 onChange={e => setPrompt(e.target.value)}
@@ -133,23 +133,23 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
             <div>
               <h3 className="text-lg font-semibold mb-4 text-[#351C15] flex items-center"><MapPin className="mr-2" size={18} /> Sender Details</h3>
               <div className="space-y-3">
-                <input className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="Name" value={draft.sender.name} onChange={e => updateDraft({ sender: { ...draft.sender, name: e.target.value } })} />
-                <input className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="Address" value={draft.sender.address} onChange={e => updateDraft({ sender: { ...draft.sender, address: e.target.value } })} />
+                <input className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="Name" value={draft.sender.name} onChange={e => updateDraft({ sender: { ...draft.sender, name: e.target.value } })} />
+                <input className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="Address" value={draft.sender.address} onChange={e => updateDraft({ sender: { ...draft.sender, address: e.target.value } })} />
                 <div className="flex gap-2">
-                  <input className="w-2/3 p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="City" value={draft.sender.city} onChange={e => updateDraft({ sender: { ...draft.sender, city: e.target.value } })} />
-                  <input className="w-1/3 p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="ZIP" value={draft.sender.zip} onChange={e => updateDraft({ sender: { ...draft.sender, zip: e.target.value } })} />
+                  <input className="w-2/3 p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="City" value={draft.sender.city} onChange={e => updateDraft({ sender: { ...draft.sender, city: e.target.value } })} />
+                  <input className="w-1/3 p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="ZIP" value={draft.sender.zip} onChange={e => updateDraft({ sender: { ...draft.sender, zip: e.target.value } })} />
                 </div>
-                <input className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="Email" value={draft.sender.email} onChange={e => updateDraft({ sender: { ...draft.sender, email: e.target.value } })} />
+                <input className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="Email" value={draft.sender.email} onChange={e => updateDraft({ sender: { ...draft.sender, email: e.target.value } })} />
               </div>
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4 text-[#351C15] flex items-center"><MapPin className="mr-2" size={18} /> Recipient Details</h3>
               <div className="space-y-3">
-                <input className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="Name" value={draft.recipient.name} onChange={e => updateDraft({ recipient: { ...draft.recipient, name: e.target.value } })} />
-                <input className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="Address" value={draft.recipient.address} onChange={e => updateDraft({ recipient: { ...draft.recipient, address: e.target.value } })} />
+                <input className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="Name" value={draft.recipient.name} onChange={e => updateDraft({ recipient: { ...draft.recipient, name: e.target.value } })} />
+                <input className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="Address" value={draft.recipient.address} onChange={e => updateDraft({ recipient: { ...draft.recipient, address: e.target.value } })} />
                 <div className="flex gap-2">
-                  <input className="w-2/3 p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="City" value={draft.recipient.city} onChange={e => updateDraft({ recipient: { ...draft.recipient, city: e.target.value } })} />
-                  <input className="w-1/3 p-2 border rounded focus:ring-2 focus:ring-[#FFB500] outline-none" placeholder="ZIP" value={draft.recipient.zip} onChange={e => updateDraft({ recipient: { ...draft.recipient, zip: e.target.value } })} />
+                  <input className="w-2/3 p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="City" value={draft.recipient.city} onChange={e => updateDraft({ recipient: { ...draft.recipient, city: e.target.value } })} />
+                  <input className="w-1/3 p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" placeholder="ZIP" value={draft.recipient.zip} onChange={e => updateDraft({ recipient: { ...draft.recipient, zip: e.target.value } })} />
                 </div>
               </div>
             </div>
@@ -165,19 +165,19 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Weight (kg)</label>
-                <input type="number" className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500]" value={draft.parcel.weightKg || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, weightKg: parseFloat(e.target.value) } })} />
+                <input type="number" className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" value={draft.parcel.weightKg || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, weightKg: parseFloat(e.target.value) } })} />
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Length (cm)</label>
-                <input type="number" className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500]" value={draft.parcel.lengthCm || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, lengthCm: parseFloat(e.target.value) } })} />
+                <input type="number" className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" value={draft.parcel.lengthCm || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, lengthCm: parseFloat(e.target.value) } })} />
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Width (cm)</label>
-                <input type="number" className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500]" value={draft.parcel.widthCm || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, widthCm: parseFloat(e.target.value) } })} />
+                <input type="number" className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" value={draft.parcel.widthCm || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, widthCm: parseFloat(e.target.value) } })} />
               </div>
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Height (cm)</label>
-                <input type="number" className="w-full p-2 border rounded focus:ring-2 focus:ring-[#FFB500]" value={draft.parcel.heightCm || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, heightCm: parseFloat(e.target.value) } })} />
+                <input type="number" className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" value={draft.parcel.heightCm || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, heightCm: parseFloat(e.target.value) } })} />
               </div>
             </div>
 

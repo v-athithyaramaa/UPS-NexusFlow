@@ -122,7 +122,7 @@ export default function WhatsAppCopilot({ draft, updateDraft }: Props) {
 
       <div className="bg-[#f0f0f0] p-3 flex items-center gap-2">
         <input 
-          className="flex-1 bg-white rounded-full py-2 px-4 outline-none text-sm"
+          className="flex-1 bg-white border border-gray-300 rounded-full py-2 px-4 outline-none text-sm text-gray-900 placeholder:text-gray-500 focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500]"
           placeholder="Type a message..."
           value={input}
           onChange={e => setInput(e.target.value)}
