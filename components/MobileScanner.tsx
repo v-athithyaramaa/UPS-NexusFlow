@@ -33,16 +33,19 @@ export default function MobileScanner({ draft, updateDraft }: Props) {
             prompt: "Extract the estimated dimensions (lengthCm, widthCm, heightCm) and weightKg of this parcel."
           })
         });
-        const data = await res.json();
+        const resData = await res.json();
         
-        updateDraft({
-          parcel: {
-            weightKg: data.weightKg || draft.parcel.weightKg,
-            lengthCm: data.lengthCm || draft.parcel.lengthCm,
-            widthCm: data.widthCm || draft.parcel.widthCm,
-            heightCm: data.heightCm || draft.parcel.heightCm,
-          }
-        });
+        if (resData.success) {
+          const { parcel } = resData.data;
+          updateDraft({
+            parcel: {
+              weightKg: parcel?.weightKg || draft.parcel.weightKg,
+              lengthCm: parcel?.lengthCm || draft.parcel.lengthCm,
+              widthCm: parcel?.widthCm || draft.parcel.widthCm,
+              heightCm: parcel?.heightCm || draft.parcel.heightCm,
+            }
+          });
+        }
       } catch (e) {
         console.error(e);
       }

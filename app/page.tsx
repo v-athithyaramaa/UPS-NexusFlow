@@ -35,9 +35,10 @@ export default function Home() {
     updatedAt: new Date().toISOString()
   });
   
+  const [isOffline, setIsOffline] = useState(false);
   const [isInitializing, setIsInitializing] = useState(true);
 
-  // Initial load: either fetch existing token from URL or create new
+  // Initial load: either fetch existing token from URL, or local storage, or create new
   useEffect(() => {
     const initDraft = async () => {
       const urlParams = new URLSearchParams(window.location.search);
@@ -50,27 +51,37 @@ export default function Home() {
             const data = await res.json();
             if (data.draft) {
               setDraft(data.draft);
+              setIsOffline(false);
               setIsInitializing(false);
               return;
             }
           }
         }
         
-        // Create new draft
+        // Attempt to create new draft online
         const res = await fetch('/api/draft', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(draft)
         });
-        const data = await res.json();
-        setDraft(data.draft);
         
-        // Update URL without reload
-        const newUrl = new URL(window.location.href);
-        newUrl.searchParams.set('session', data.sessionToken);
-        window.history.pushState({}, '', newUrl.toString());
+        if (res.ok) {
+          const data = await res.json();
+          setDraft(data.draft);
+          setIsOffline(false);
+          const newUrl = new URL(window.location.href);
+          newUrl.searchParams.set('session', data.sessionToken);
+          window.history.pushState({}, '', newUrl.toString());
+        } else {
+          throw new Error("Server returned error");
+        }
       } catch (error) {
-        console.error("Failed to init draft", error);
+        console.warn("Offline or network error, falling back to local storage", error);
+        setIsOffline(true);
+        const localDraft = localStorage.getItem('nexus_draft_offline');
+        if (localDraft) {
+          setDraft(JSON.parse(localDraft));
+        }
       }
       setIsInitializing(false);
     };
@@ -80,13 +91,18 @@ export default function Home() {
 
   const saveDraftToRedis = async (newDraft: Draft) => {
     try {
-      await fetch('/api/draft', {
+      const res = await fetch('/api/draft', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newDraft)
       });
+      if (!res.ok) throw new Error("500 Server Error - Offline");
+      setIsOffline(false);
+      localStorage.removeItem('nexus_draft_offline');
     } catch (e) {
-      console.error("Auto-save failed", e);
+      console.warn("Auto-save failed (offline mode activated). Saving locally.", e);
+      setIsOffline(true);
+      localStorage.setItem('nexus_draft_offline', JSON.stringify(newDraft));
     }
   };
 
@@ -134,6 +150,12 @@ export default function Home() {
         sessionToken={draft.sessionToken} 
       />
       
+      {isOffline && (
+        <div className="bg-red-500 text-white text-center py-2 px-4 text-sm font-semibold">
+          You are offline. Changes are being saved locally and will sync when you reconnect.
+        </div>
+      )}
+
       <div className="flex-1 flex flex-col">
         {/* Navigation Tabs */}
         <div className="bg-white border-b border-gray-200 px-6 py-3 flex space-x-6">

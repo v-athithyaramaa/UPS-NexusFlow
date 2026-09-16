@@ -1,50 +1,49 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { weightKg, lengthCm, widthCm, heightCm, senderZip, recipientZip } = await request.json();
+    const { weightKg, lengthCm, widthCm, heightCm, senderZip, recipientZip } = await req.json();
 
-    // Convert to lbs and inches for standard calculation
-    const weightLbs = weightKg * 2.20462;
-    const lengthIn = lengthCm * 0.393701;
-    const widthIn = widthCm * 0.393701;
-    const heightIn = heightCm * 0.393701;
-
-    // Calculate Dimensional Weight
-    const dimWeight = (lengthIn * widthIn * heightIn) / 139;
-    const billableWeight = Math.max(weightLbs, dimWeight, 1); // Minimum 1 lb
-
-    const baseWeightMarkup = billableWeight * 0.5;
+    const actualWeight = parseFloat(weightKg) || 1;
+    const l = parseFloat(lengthCm) || 10;
+    const w = parseFloat(widthCm) || 10;
+    const h = parseFloat(heightCm) || 10;
+    
+    const dimWeight = (l * w * h) / 5000;
+    const billableWeight = Math.max(actualWeight, dimWeight);
+    
+    const sZip = parseInt(senderZip) || 90210;
+    const rZip = parseInt(recipientZip) || 10001;
+    const zipDelta = Math.abs(sZip - rZip) / 1000;
 
     const tiers = [
       {
         id: 'ground',
         name: 'UPS Ground',
-        cost: 14.50 + baseWeightMarkup,
-        speed: '3-5 days delivery',
-        carbonKg: 0.8,
-        tag: null
+        cost: 8.50 + (billableWeight * 1.20) + zipDelta,
+        speed: '3-5 Business Days',
+        carbonKg: +(0.45 * billableWeight).toFixed(2),
+        tag: 'Best Value'
       },
       {
-        id: '2nd_day',
+        id: 'second_day',
         name: 'UPS 2nd Day Air',
-        cost: 28.00 + baseWeightMarkup * 1.5,
-        speed: '2 business days',
-        carbonKg: 2.1,
-        tag: null
+        cost: 18.00 + (billableWeight * 2.80) + zipDelta,
+        speed: '2 Business Days',
+        carbonKg: +(1.80 * billableWeight).toFixed(2)
       },
       {
         id: 'next_day',
         name: 'UPS Next Day Saver',
-        cost: 49.00 + baseWeightMarkup * 2.5,
-        speed: 'Next day delivery',
-        carbonKg: 4.6,
+        cost: 35.00 + (billableWeight * 4.90) + zipDelta,
+        speed: 'Next Business Day',
+        carbonKg: +(3.90 * billableWeight).toFixed(2),
         tag: 'Fastest'
       }
     ];
 
     return NextResponse.json({ tiers });
-  } catch (error) {
-    return NextResponse.json({ error: 'Failed to calculate rates' }, { status: 500 });
+  } catch (e) {
+    return NextResponse.json({ error: 'Failed to compute rates' }, { status: 500 });
   }
 }

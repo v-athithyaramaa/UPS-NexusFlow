@@ -35,7 +35,7 @@ export default function WhatsAppCopilot({ draft, updateDraft }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: input })
       });
-      const data = await res.json();
+      const resData = await res.json();
       
       let botReply = "Got it! ";
       const updates: Partial<Draft> = {};
@@ -43,40 +43,36 @@ export default function WhatsAppCopilot({ draft, updateDraft }: Props) {
       let parcelUpdates: any = { ...draft.parcel };
       let parcelChanged = false;
       
-      if (data.recipientCity) {
-        botReply += `Destination: ${data.recipientCity}. `;
-        updates.recipient = { ...draft.recipient, city: data.recipientCity };
-        hasUpdate = true;
-      }
-      if (data.senderCity) {
-        botReply += `Origin: ${data.senderCity}. `;
-        updates.sender = { ...draft.sender, city: data.senderCity };
-        hasUpdate = true;
-      }
-      if (data.weightKg) {
-        botReply += `Weight: ${data.weightKg}kg. `;
-        parcelUpdates.weightKg = data.weightKg;
-        parcelChanged = true;
-      }
-      if (data.lengthCm) {
-        botReply += `Length: ${data.lengthCm}cm. `;
-        parcelUpdates.lengthCm = data.lengthCm;
-        parcelChanged = true;
-      }
-      if (data.widthCm) {
-        botReply += `Width: ${data.widthCm}cm. `;
-        parcelUpdates.widthCm = data.widthCm;
-        parcelChanged = true;
-      }
-      if (data.heightCm) {
-        botReply += `Height: ${data.heightCm}cm. `;
-        parcelUpdates.heightCm = data.heightCm;
-        parcelChanged = true;
-      }
+      if (resData.success && resData.data) {
+        const { sender, recipient, parcel } = resData.data;
 
-      if (parcelChanged) {
-        updates.parcel = parcelUpdates;
-        hasUpdate = true;
+        if (recipient?.city) {
+          botReply += `Destination: ${recipient.city}. `;
+          updates.recipient = { ...draft.recipient, city: recipient.city };
+          hasUpdate = true;
+        }
+        if (sender?.city) {
+          botReply += `Origin: ${sender.city}. `;
+          updates.sender = { ...draft.sender, city: sender.city };
+          hasUpdate = true;
+        }
+        if (parcel?.weightKg && parcel.weightKg !== 1) { // 1 is our new fallback default
+          botReply += `Weight: ${parcel.weightKg}kg. `;
+          parcelUpdates.weightKg = parcel.weightKg;
+          parcelChanged = true;
+        }
+        if (parcel?.lengthCm && parcel.lengthCm !== 1) {
+          botReply += `Dimensions: ${parcel.lengthCm}x${parcel.widthCm}x${parcel.heightCm}cm. `;
+          parcelUpdates.lengthCm = parcel.lengthCm;
+          parcelUpdates.widthCm = parcel.widthCm;
+          parcelUpdates.heightCm = parcel.heightCm;
+          parcelChanged = true;
+        }
+
+        if (parcelChanged) {
+          updates.parcel = parcelUpdates;
+          hasUpdate = true;
+        }
       }
 
       if (hasUpdate) {

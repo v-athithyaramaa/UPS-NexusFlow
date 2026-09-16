@@ -44,27 +44,48 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
   };
 
   const handleAiExtract = async () => {
+    if (!prompt.trim()) {
+      alert("Please enter a package description to extract details from (e.g., '5kg box 30x20x15cm').");
+      return;
+    }
+
     setExtracting(true);
     try {
-      const payloadPrompt = prompt.trim() || "5kg box 30x20x15cm going from NYC to LA";
       const res = await fetch('/api/ai/extract', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: payloadPrompt })
+        body: JSON.stringify({ prompt: prompt.trim() })
       });
-      const data = await res.json();
+      const resData = await res.json();
       
-      updateDraft({
-        sender: { ...draft.sender, city: data.senderCity || draft.sender.city },
-        recipient: { ...draft.recipient, city: data.recipientCity || draft.recipient.city },
-        parcel: {
-          weightKg: data.weightKg || draft.parcel.weightKg,
-          lengthCm: data.lengthCm || draft.parcel.lengthCm,
-          widthCm: data.widthCm || draft.parcel.widthCm,
-          heightCm: data.heightCm || draft.parcel.heightCm,
-        }
-      });
-      setPrompt('');
+      if (resData.success) {
+        const { sender, recipient, parcel } = resData.data;
+        updateDraft({
+          sender: { 
+            ...draft.sender, 
+            city: sender?.city || draft.sender.city,
+            name: sender?.name || draft.sender.name,
+            zip: sender?.zip || draft.sender.zip,
+            address: sender?.address || draft.sender.address
+          },
+          recipient: { 
+            ...draft.recipient, 
+            city: recipient?.city || draft.recipient.city,
+            name: recipient?.name || draft.recipient.name,
+            zip: recipient?.zip || draft.recipient.zip,
+            address: recipient?.address || draft.recipient.address
+          },
+          parcel: {
+            weightKg: parcel?.weightKg || draft.parcel.weightKg,
+            lengthCm: parcel?.lengthCm || draft.parcel.lengthCm,
+            widthCm: parcel?.widthCm || draft.parcel.widthCm,
+            heightCm: parcel?.heightCm || draft.parcel.heightCm,
+          }
+        });
+        setPrompt('');
+      } else {
+        alert("Extraction failed: " + resData.error);
+      }
     } catch (e) {
       console.error(e);
     }
@@ -88,6 +109,25 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
       </div>
 
       <div className="p-8">
+        {draft.step <= 2 && (
+          <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
+            <h4 className="font-semibold text-amber-800 mb-2 flex items-center"><Package className="mr-2" size={18} /> AI Magic Fill</h4>
+            <div className="flex gap-2">
+              <input 
+                className="flex-1 p-2 border border-amber-300 rounded focus:ring-2 focus:ring-amber-500 outline-none" 
+                placeholder="Paste an email or text (e.g. '5kg box 30x20x15cm going from NYC to LA')" 
+                value={prompt} 
+                onChange={e => setPrompt(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAiExtract()}
+              />
+              <button onClick={handleAiExtract} disabled={extracting} className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 disabled:opacity-50 whitespace-nowrap">
+                {extracting ? 'Extracting...' : '✨ Magic Extract'}
+              </button>
+            </div>
+            <p className="text-xs text-amber-700 mt-2">Skip manual entry! Paste a description and AI will fill out both Origin & Destination and Package details.</p>
+          </div>
+        )}
+
         {draft.step === 1 && (
           <div className="grid md:grid-cols-2 gap-8">
             <div>
@@ -121,21 +161,6 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
 
         {draft.step === 2 && (
           <div className="space-y-6">
-            <div className="bg-amber-50 p-4 rounded-lg border border-amber-200">
-              <h4 className="font-semibold text-amber-800 mb-2 flex items-center"><Package className="mr-2" size={18} /> AI Quick Extract</h4>
-              <div className="flex gap-2">
-                <input 
-                  className="flex-1 p-2 border border-amber-300 rounded focus:ring-2 focus:ring-amber-500 outline-none" 
-                  placeholder="e.g. 5kg box 30x20x15cm going from NYC to LA" 
-                  value={prompt} 
-                  onChange={e => setPrompt(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleAiExtract()}
-                />
-                <button onClick={handleAiExtract} disabled={extracting} className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 disabled:opacity-50">
-                  {extracting ? 'Extracting...' : 'Extract'}
-                </button>
-              </div>
-            </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div>

@@ -1,85 +1,44 @@
-import { NextResponse } from 'next/server';
-import { GoogleGenAI } from '@google/genai';
+import { NextRequest, NextResponse } from "next/server";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
-    const { prompt, imageBase64 } = await request.json();
+    const { prompt, imageBase64 } = await req.json();
+    if (!process.env.GEMINI_API_KEY) {
+      return NextResponse.json({ error: "GEMINI_API_KEY is not set" }, { status: 500 });
+    }
 
-    const systemPrompt = `Extract shipment details from the user prompt or image and return ONLY a JSON object adhering strictly to this format:
+    const model = genAI.getGenerativeModel({
+      model: "gemini-3.6-flash",
+      generationConfig: { responseMimeType: "application/json" },
+    });
+
+    const systemInstruction = `You are a UPS Logistics AI. Extract shipment details from the user's input or package photo. Return ONLY valid JSON with this exact schema:
     {
-      "senderCity": "string or null",
-      "recipientCity": "string or null",
-      "weightKg": number or null,
-      "lengthCm": number or null,
-      "widthCm": number or null,
-      "heightCm": number or null,
-      "urgency": "string (e.g., 'high', 'low', 'standard') or null"
+      "sender": { "name": "string", "city": "string", "zip": "string", "address": "string" },
+      "recipient": { "name": "string", "city": "string", "zip": "string", "address": "string" },
+      "parcel": { "weightKg": 0, "lengthCm": 0, "widthCm": 0, "heightCm": 0 },
+      "urgency": "GROUND"
     }
-    Rules:
-    1. If the user provides a city without specifying if it's origin or destination, assume it is the recipientCity (destination), UNLESS they explicitly say "from [City]".
-    2. If they provide dimensions like "30x40x50", YOU MUST assign them to lengthCm, widthCm, and heightCm respectively. Do not leave them null.
-    3. If they provide weight like "50kgs" or "5kg", YOU MUST assign it to weightKg as a number. Do not leave it null.
-    4. Return ONLY the JSON object, without markdown blocks, without any other text.`;
+    Infer realistic package dimensions/weight if an image is provided. Fallback missing string fields to "" and numbers to 1.0.`;
 
-    console.log("--- AI EXTRACT TRIGGERED ---");
-    console.log("Received Prompt:", prompt);
-    console.log("Has Image:", !!imageBase64);
-
-    if (!prompt && !imageBase64) {
-      return NextResponse.json({ error: 'Prompt or image is required' }, { status: 400 });
-    }
-
-    let responseText = "";
-
+    let parts: any[] = [{ text: systemInstruction }, { text: `User request: ${prompt || "Analyze this package image"}` }];
     if (imageBase64) {
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
-        contents: [
-            systemPrompt,
-            prompt || "Analyze this image for parcel dimensions and details.",
-            {
-                inlineData: {
-                    data: imageBase64,
-                    mimeType: "image/jpeg"
-                }
-            }
-        ]
+      parts.push({
+        inlineData: {
+          mimeType: "image/jpeg",
+          data: imageBase64.replace(/^data:image\/\w+;base64,/, ""),
+        },
       });
-      responseText = response.text || "";
-    } else {
-      const response = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
-        contents: [
-            systemPrompt,
-            prompt
-        ]
-      });
-      responseText = response.text || "";
     }
 
-    console.log("RAW GEMINI RESPONSE:");
-    console.log(responseText);
-
-    // Attempt to parse JSON from the response
-    const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-    let extractedData = {};
-    if (jsonMatch) {
-      try {
-        extractedData = JSON.parse(jsonMatch[0]);
-      } catch (e) {
-        console.error("Failed to parse Gemini JSON output", e);
-      }
-    } else {
-      console.error("NO JSON MATCH FOUND IN GEMINI RESPONSE");
-    }
-
-    console.log("PARSED DATA:", extractedData);
-    return NextResponse.json(extractedData);
+    const result = await model.generateContent(parts);
+    const parsed = JSON.parse(result.response.text());
+    return NextResponse.json({ success: true, data: parsed });
   } catch (error: any) {
     console.error("AI Extraction Error:", error);
-    const errorMessage = error?.message || 'Failed to extract information';
-    return NextResponse.json({ error: errorMessage }, { status: 500 });
+    return NextResponse.json({ success: false, error: error.message }, { status: 500 });
   }
 }
