@@ -140,7 +140,7 @@ export default function Home() {
   if (isInitializing) return <div className="min-h-screen flex items-center justify-center bg-[#F3F4F6] text-[#351C15]">Initializing NexusFlow...</div>;
 
   return (
-    <div className="min-h-screen bg-[#F3F4F6] flex flex-col font-sans">
+    <div className="min-h-screen bg-[#F3F4F6] flex flex-col font-sans overflow-x-hidden w-full max-w-full">
       <OmnichannelSwitcher 
         currentView={currentView} 
         onViewChange={(v) => {
@@ -158,7 +158,7 @@ export default function Home() {
 
       <div className="flex-1 flex flex-col">
         {/* Navigation Tabs */}
-        <div className="bg-white border-b border-gray-200 px-6 py-3 flex space-x-6">
+        <div className="bg-white border-b border-gray-200 px-4 sm:px-6 py-3 flex space-x-4 sm:space-x-6 overflow-x-auto whitespace-nowrap w-full">
           <button 
             className={`font-semibold pb-1 border-b-2 transition-colors ${activeTab === 'BOOKING' ? 'border-[#FFB500] text-[#351C15]' : 'border-transparent text-gray-500 hover:text-gray-700'}`}
             onClick={() => setActiveTab('BOOKING')}
@@ -183,7 +183,7 @@ export default function Home() {
               )}
               
               {currentView === 'WHATSAPP' && (
-                <div className="h-[80vh] flex items-center justify-center">
+                <div className="h-[70vh] sm:h-[80vh] w-full flex items-center justify-center">
                   <WhatsAppCopilot draft={draft} updateDraft={updateDraft} />
                 </div>
               )}

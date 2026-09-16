@@ -75,7 +75,7 @@ export default function Dashboard() {
                   </span>
                 </div>
                 
-                <div className="flex items-center text-sm text-gray-600 space-x-6">
+                <div className="flex flex-wrap items-center text-sm text-gray-600 gap-y-2 gap-x-4 sm:gap-x-6">
                   <div className="flex items-center"><MapPin size={14} className="mr-1" /> {shipment.sender_city} → {shipment.recipient_city}</div>
                   <div className="flex items-center"><Calendar size={14} className="mr-1" /> {new Date(shipment.created_at).toLocaleDateString()}</div>
                   <div className="flex items-center"><Truck size={14} className="mr-1" /> {shipment.service_tier}</div>

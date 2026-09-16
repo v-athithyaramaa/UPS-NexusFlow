@@ -112,7 +112,7 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
         {draft.step <= 2 && (
           <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mb-8">
             <h4 className="font-semibold text-amber-800 mb-2 flex items-center"><Package className="mr-2" size={18} /> AI Magic Fill</h4>
-            <div className="flex gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
               <input 
                 className="flex-1 p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" 
                 placeholder="Paste an email or text (e.g. '5kg box 30x20x15cm going from NYC to LA')" 
@@ -120,7 +120,7 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
                 onChange={e => setPrompt(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleAiExtract()}
               />
-              <button onClick={handleAiExtract} disabled={extracting} className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 disabled:opacity-50 whitespace-nowrap">
+              <button onClick={handleAiExtract} disabled={extracting} className="bg-amber-600 text-white px-4 py-2 rounded hover:bg-amber-700 disabled:opacity-50 whitespace-nowrap w-full sm:w-auto">
                 {extracting ? 'Extracting...' : '✨ Magic Extract'}
               </button>
             </div>
@@ -162,7 +162,7 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
         {draft.step === 2 && (
           <div className="space-y-6">
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm text-gray-600 mb-1">Weight (kg)</label>
                 <input type="number" className="w-full p-2 border border-gray-300 rounded focus:border-[#FFB500] focus:ring-1 focus:ring-[#FFB500] focus:outline-none text-gray-900 bg-white placeholder:text-gray-500" value={draft.parcel.weightKg || ''} onChange={e => updateDraft({ parcel: { ...draft.parcel, weightKg: parseFloat(e.target.value) } })} />
@@ -193,7 +193,7 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
         {draft.step === 3 && (
           <div className="space-y-4">
             <h3 className="text-xl font-semibold mb-4 text-[#351C15]">Select UPS Service</h3>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               {rates.map(tier => (
                 <div 
                   key={tier.id} 
@@ -226,7 +226,7 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
 
         {draft.step === 4 && (
           <div className="space-y-6">
-            <div className="bg-gray-50 p-6 rounded-lg border border-gray-200 grid md:grid-cols-2 gap-6 relative">
+            <div className="bg-gray-50 p-4 sm:p-6 rounded-lg border border-gray-200 grid grid-cols-1 md:grid-cols-2 gap-6 relative overflow-x-auto">
               <div className="absolute top-4 right-4 opacity-10">
                 <Package size={100} />
               </div>
@@ -256,7 +256,7 @@ export default function BookingStepper({ draft, updateDraft, bookShipment }: Pro
               <button onClick={handlePrev} className="px-6 py-2 border border-gray-300 rounded font-medium text-gray-600 hover:bg-gray-50 transition">Back</button>
               <button 
                 onClick={bookShipment}
-                className="bg-[#FFB500] text-[#351C15] px-8 py-3 rounded-lg font-bold text-lg shadow-lg hover:bg-amber-400 hover:scale-105 transition-all flex items-center"
+                className="w-full md:w-auto bg-[#FFB500] text-[#351C15] px-8 py-3 rounded-lg font-bold text-lg shadow-lg hover:bg-amber-400 hover:scale-105 transition-all flex items-center justify-center"
               >
                 <CheckCircle className="mr-2" /> Book & Generate Label
               </button>

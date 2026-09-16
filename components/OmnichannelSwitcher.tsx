@@ -15,9 +15,9 @@ export default function OmnichannelSwitcher({ currentView, onViewChange, session
 
   return (
     <div className="bg-[#351C15] text-white p-4 flex flex-col md:flex-row items-center justify-between shadow-md z-50 relative">
-      <div className="flex items-center space-x-4 mb-4 md:mb-0">
+      <div className="flex flex-col md:flex-row items-center space-y-3 md:space-y-0 md:space-x-4 mb-4 md:mb-0 w-full md:w-auto">
         <h1 className="text-xl font-bold text-[#FFB500]">UPS NexusFlow</h1>
-        <div className="hidden md:flex bg-white/10 rounded-lg p-1">
+        <div className="flex flex-wrap justify-center gap-2 bg-white/10 rounded-lg p-1 w-full md:w-auto">
           <button
             onClick={() => onViewChange('WEB_PORTAL')}
             className={`px-3 py-1.5 rounded flex items-center space-x-2 text-sm transition-colors ${currentView === 'WEB_PORTAL' ? 'bg-[#FFB500] text-[#351C15] font-semibold' : 'hover:bg-white/20'}`}
@@ -42,7 +42,7 @@ export default function OmnichannelSwitcher({ currentView, onViewChange, session
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex flex-wrap items-center justify-center gap-2 w-full md:w-auto">
         <div className="text-sm bg-black/30 px-3 py-1.5 rounded-md border border-white/10">
           Session Code: <span className="font-mono font-bold text-[#FFB500]">{sessionToken}</span>
         </div>
@@ -55,7 +55,7 @@ export default function OmnichannelSwitcher({ currentView, onViewChange, session
         </button>
 
         {showQR && (
-          <div className="absolute top-16 right-4 bg-white p-4 rounded-lg shadow-xl text-[#351C15] z-50 border border-gray-200">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 md:translate-x-0 md:left-auto md:right-4 mt-2 w-[90vw] max-w-sm bg-white p-4 rounded-lg shadow-xl text-[#351C15] z-50 border border-gray-200">
             <h3 className="text-sm font-bold mb-2 text-center">Scan to Sync Session</h3>
             <div className="bg-white p-2 rounded-md">
               <QRCodeSVG value={`${typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'}/?session=${sessionToken}`} size={128} />
